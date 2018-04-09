@@ -6,10 +6,11 @@ require 'net/http'
 
 
 # Config
-address = "https://www.invesdor.com/en/pitches/890/banner"
+address = "https://www.invesdor.com/en/pitches/903/banner"
 sum_per_coin = 500
 filepath = "latest_sum.txt"
 soundpath = "coin.wav"
+announcement_voice = "Vicki" #set to nil to skip Mac say command announcement
 repeat_after = 600 #number of seconds to wait between polls. Set 0 to turn of repeating.
                     # NOTE: if this is above zero, the program never stops automatically
 
@@ -57,6 +58,7 @@ while repeat_after > 0 do
             sleep 0.20
         end
         `afplay #{soundpath}`
+        `say -v "#{announcement_voice}" "The current sum of investments is #{latest_sum}."` if announcement_voice
     end
 
 
