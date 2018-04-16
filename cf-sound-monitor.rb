@@ -10,8 +10,15 @@ address = "https://www.invesdor.com/en/pitches/903/banner"
 sum_per_coin = 500
 filepath = "latest_sum.txt"
 soundpath = "coin.wav"
+
+lifeupinterval = 30000 # How often should a 1up sound be played (set to 0 to disable)
+lifeupsoundpath = "1up.wav"
+
+levelupinterval = 500000  # How often should a level up sound be played (set to 0 to disable)
+levelupsoundpath = "levelup.wav"
+
 announcement_voice = "Alex" #set to nil to skip Mac say command announcement
-repeat_after = 600 #number of seconds to wait between polls. Set 0 to turn of repeating.
+repeat_after = 300 #number of seconds to wait between polls. Set 0 to turn of repeating.
                     # NOTE: if this is above zero, the program never stops automatically
 
 
@@ -55,10 +62,29 @@ while repeat_after > 0 do
                 `afplay #{soundpath}`
             end
             extra_coins -= 1
-            sleep 0.20
+            sleep 0.35
         end
+        
         `afplay #{soundpath}`
-        `say -v "#{announcement_voice}" "The current sum of investments is #{sum}."` if announcement_voice
+
+        # check if level up reached
+        if sum/levelupinterval > latest_sum/levelupinterval
+            `afplay #{levelupsoundpath}`
+        end
+
+        # check if 1up reached
+        if sum/lifeupinterval > latest_sum/lifeupinterval 
+            `afplay #{lifeupsoundpath}`
+        end
+
+        sleep 1
+        
+        sum_to_say = sum
+        if sum > 1000000
+            sum_to_say = "1 million #{sum-1000000}"
+        end
+
+        `say -v "#{announcement_voice}" "The current sum of investments is #{sum_to_say}."` if announcement_voice
     end
 
 
