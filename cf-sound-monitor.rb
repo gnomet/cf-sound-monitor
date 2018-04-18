@@ -26,16 +26,6 @@ while repeat_after > 0 do
 
     print "\nChecking campaign status at #{Time.now}: "
 
-    # Read latest sum from file
-    latest_sum = 0
-    if File.file?(filepath)
-        File.open(filepath, 'r') do |f|  
-            latest_sum = f.gets.to_i  
-        end  
-    end
-
-    print "#{latest_sum} -> "
-
 
     # Check latest sum online
     uri = URI.parse(address)
@@ -45,7 +35,22 @@ while repeat_after > 0 do
     response = http.request(request)
     sum = response.body.match(/<span>([\d\.]+)..EUR<\/span>/)[1].delete(".").to_i
 
-    print  "#{sum}"
+
+    # Read the earlier sum from file
+    latest_sum = 0
+    if File.file?(filepath)
+        File.open(filepath, 'r') do |f|  
+            latest_sum = f.gets.to_i  
+        end  
+    else
+        # if the file was not found, this is probably the first time running
+        # and then it doesn't make sense to play all the sounds from 0 to sum
+        latest_sum = sum 
+    end
+
+
+    print "#{latest_sum} -> #{sum}"
+
 
 
     # Play the sounds
@@ -78,7 +83,7 @@ while repeat_after > 0 do
         end
 
         sleep 1
-        
+
         sum_to_say = sum
         if sum > 1000000
             sum_to_say = "1 million #{sum-1000000}"
